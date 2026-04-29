@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attacker Page</title>
+</head>
+<body>
+    <h1 class="title">Attacker Page</h1>
+    <p class="desc">Goal: Clickjack user into purchasing the item. Deliver to user when your code is ready.</p>
+    <div class="container">
+        <div class = "preview_container">
+            <h3>Preview Pane</h3>
+            <iframe class="preview"></iframe>
+        </div>
+        <div class="html_editor">
+            <h3>HTML Editor</h3>
+            <textarea class="html_code" placeholder="Enter code here..."></textarea>
+            <button onclick="previewCode()">Preview</button>
+            <button onclick="submit()">Deliver to User</button>
+            <p class="submit_text" style="display: none;">Now head over to the
+            <a href="victim.html">Victim Page</a>
+            and perform the clicks to reveal the flag!
+    </p>
+        </div>
+    </div>
+</body>
+</html>
+
+<style>
+    body {
+    font-family: Arial, Helvetica, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: rgba(255, 0, 0, 0.505);
+    text-align: center;
+}
+
+h1 {
+    padding: 20px;
+    margin: 0;
+}
+.desc {
+    padding: 10px;
+    margin: 0;
+}
+.container {
+    display: flex;
+    margin: auto;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    max-width: 1000px;
+    box-sizing: border-box;
+    padding: 20px 20px;
+}
+
+.preview_container, .html_editor {
+    background-color: white;
+    border: solid 2px;
+    border-radius: 10px;
+    width: 100%;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.preview{
+    position: relative;
+    overflow: auto;
+    border: solid 1px lightgray;
+    border-radius: 10px;
+    background-color: rgb(246, 246, 246);
+    height: 600px;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px;
+    text-align: left;
+    user-select:none;
+}
+
+.html_code {
+    font-family: monospace;
+    box-sizing: border-box;
+    border: 1px solid lightgray;
+    border-radius: 10px;
+    width: 100%;
+    height: 300px;
+    font-size: 18px;
+    padding: 10px;
+    resize: vertical;
+}
+
+button {
+    background-color: lightgray;
+    border: 1px solid;
+    padding: 10px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    margin: 3px;
+}
+
+button:hover {
+    background-color: gray;
+    color: white;
+}
+
+</style>
+
+<script>
+    function previewCode() {
+        const code = document.querySelector('.html_code').value;
+        const iframe = document.querySelector('.preview');
+        iframe.contentDocument.open();
+        iframe.contentDocument.write(code);
+        iframe.contentDocument.close();
+    }
+
+    // send the attacker's HTML payload to the server to update victim.html
+    function submit(){
+        const code = document.querySelector('.html_code').value;
+        fetch('/write-to-victim', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ code })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                document.querySelector('.submit_text').style.display = 'block';
+            }
+        });
+    }
+</script>

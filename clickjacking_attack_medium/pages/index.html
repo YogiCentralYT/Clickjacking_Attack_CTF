@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Landing Page</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel='stylesheet' type='text/css' media='screen' href='main.css'>
+    <script src='main.js'></script>
+</head>
+<body>
+    <h1 class="title">Clickjacking Attack - Medium</h1>
+    <p class="desc">Goal: Below are three different sites. Only one of them is vulnerable to clickjacking. Your task is to investigate and mark the right one as vulnerable.
+        <text style="font-weight: bold;"> Don't just guess! </text>
+    </p>
+    <div class="container">
+        <div class="box">
+            <h3>Social Media Site</h3>
+            <p>This is a social media site where users can connect with other users online.</p>
+            <a href="soc_med.html" class="link">Visit</a>
+            <button class="vul_btn">Mark As Vulnerable</button>
+        </div>
+        <div class="box">
+            <h3>Banking Site</h3>
+            <p>This is a banking site where users can manage their accounts perform transactions.</p>
+            <a href="bank.html" class="link">Visit</a>
+            <button class="vul_btn">Mark As Vulnerable</button>
+        </div> 
+        <div class="box">
+            <h3>E-commerce Site</h3>
+            <p>This is an e-commerce site where users can buy and sell products.</p>
+            <a href="e_comm.html" class="link">Visit</a>
+            <button class="vul_btn">Mark As Vulnerable</button>
+        </div>
+    </div>
+
+    <div class="incorrect">
+        Incorrect!
+    </div>
+    <div>
+        <p class="correct">Correct!</p>
+        <p class="attack">Now you may proceed to 
+            <a href="attack.html">Attacker Page</a>
+            to exploit the vulnerabiltiy and complete the challenge.
+        </p>
+    </div>
+</body>
+</html>
+
+<style>
+    body{
+        text-align: center; 
+        font-family: Arial, Helvetica, sans-serif;
+        background-color: #ffdd6246;
+        padding: 20px;
+    }
+    .container{
+        display: flex;
+        gap: 10px;
+        padding-bottom: 20px;
+        justify-content: center;
+        max-width: 1000px;
+        margin: auto;
+    }
+    .box{
+        border: 2px solid black;
+        border-radius: 10px;
+        padding: 20px;
+        width: 30%;
+        background-color: white;
+    }
+    .link{
+        display: inline-block;
+        color: blue;
+        background-color: lightblue;
+        padding: 10px 10px;
+        border-radius: 5px;
+        }
+    .vul_btn{
+        background-color: red;
+        color: white;
+        border: none;
+        padding: 10px 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        }
+    .vul_btn:hover{
+        background-color: #e60000;
+    }
+    .incorrect{
+        display:none;
+        color: white;
+        background-color: red;
+        padding: 10px;
+        margin-top: 20px;
+    }
+    .correct{
+        display: none;
+        color: white;
+        background-color: green;
+        padding: 10px;
+        margin-top: 20px;
+    }
+    .attack{
+        display: none;
+    }  
+    </style>
+
+<script>
+    const buttons = document.querySelectorAll('.vul_btn');
+    const incorrect = document.querySelector('.incorrect');
+    const correct = document.querySelector('.correct');
+    const attack = document.querySelector('.attack');
+
+    // send the site the user selected to the server and update the page based on the response
+    buttons.forEach(button => {
+        button.addEventListener('click', () => {
+            const site = button.previousElementSibling.getAttribute('href');
+            fetch('/check-vulnerable', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ site })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.correct) {
+                    correct.style.display = 'block';
+                    attack.style.display = 'block';
+                    incorrect.style.display = 'none';
+                } else {
+                    incorrect.style.display = 'block';
+                    correct.style.display = 'none';
+                    attack.style.display = 'none';
+                }
+            });
+        });
+    });
+</script>
